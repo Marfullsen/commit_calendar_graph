@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yearly Commit Calendar</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(53, 15px); /* 53 weeks */
+      gap: 2px;
+    }
+    .day {
+      width: 15px;
+      height: 15px;
+      background-color: #ebedf0; /* Default color for no commits */
+      border-radius: 2px;
+    }
+    .day.level-1 { background-color: #c6e48b; } /* Low activity */
+    .day.level-2 { background-color: #7bc96f; } /* Medium activity */
+    .day.level-3 { background-color: #239a3b; } /* High activity */
+    .day.level-4 { background-color: #196127; } /* Very high activity */
+    .legend {
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-right: 15px;
+    }
+    .legend-box {
+      width: 15px;
+      height: 15px;
+      margin-right: 5px;
+      border-radius: 2px;
+    }
+    .legend-text {
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Commit Calendar</h1>
+  <div class="calendar" id="calendar"></div>
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-box" style="background-color: #ebedf0;"></div>
+      <div class="legend-text">No commits</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-box" style="background-color: #c6e48b;"></div>
+      <div class="legend-text">Low</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-box" style="background-color: #7bc96f;"></div>
+      <div class="legend-text">Medium</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-box" style="background-color: #239a3b;"></div>
+      <div class="legend-text">High</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-box" style="background-color: #196127;"></div>
+      <div class="legend-text">Very High</div>
+    </div>
+  </div>
+  <script>
+    // Generate random commit data for demonstration purposes
+    function generateRandomCommitData(year) {
+      const startDate = new Date(year, 0, 1);
+      const endDate = new Date(year, 11, 31);
+      const commitData = {};
+      let currentDate = new Date(startDate);
+
+      while (currentDate <= endDate) {
+        const dateKey = currentDate.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+        commitData[dateKey] = Math.floor(Math.random() * 5); // Random value between 0 and 4
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+
+      return commitData;
+    }
+
+    // Render the calendar
+    function renderCalendar(year, commitData) {
+      const calendarElement = document.getElementById('calendar');
+      const startDate = new Date(year, 0, 1);
+      const endDate = new Date(year, 11, 31);
+      let currentDay = startDate.getDay(); // Day of the week (0 = Sunday, 6 = Saturday)
+
+      // Add empty days before the first day of the year
+      for (let i = 0; i < currentDay; i++) {
+        const emptyDay = document.createElement('div');
+        emptyDay.classList.add('day');
+        calendarElement.appendChild(emptyDay);
+      }
+
+      // Add days for the entire year
+      let currentDate = new Date(startDate);
+      while (currentDate <= endDate) {
+        const dateKey = currentDate.toISOString().split('T')[0];
+        const dayElement = document.createElement('div');
+        dayElement.classList.add('day');
+
+        if (commitData[dateKey]) {
+          dayElement.classList.add(`level-${commitData[dateKey]}`);
+        }
+
+        calendarElement.appendChild(dayElement);
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+    }
+
+    // Main execution
+    const year = 2023;
+    const commitData = generateRandomCommitData(year);
+    renderCalendar(year, commitData);
+  </script>
+</body>
+</html>
